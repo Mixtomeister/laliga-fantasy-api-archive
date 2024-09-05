@@ -19,7 +19,7 @@ if __name__ == "__main__":
     conn = http.client.HTTPSConnection("api-fantasy.llt-services.com")
     try:
         conn.request("GET", "/api/v3/players")
-        
+
         response = conn.getresponse()
         data = response.read().decode("utf-8")
 
@@ -33,17 +33,18 @@ if __name__ == "__main__":
 
     now = datetime.now()
 
-    if not os.path.exists(f'./{now.strftime("%Y%m")}'):
-        os.makedirs(f'./{now.strftime("%Y%m")}')
+    if not os.path.exists(f'/var/lib/laliga-fantasy-api-archive/archive/{now.strftime("%Y%m")}'):
+        os.makedirs(f'/var/lib/laliga-fantasy-api-archive/archive/{now.strftime("%Y%m")}')
 
     if players_data:
-        with open(f'./{now.strftime("%Y%m")}/{now.strftime("%d")}.json', 'w') as f:
+        with open(f'/var/lib/laliga-fantasy-api-archive/archive/{now.strftime("%Y%m")}/{now.strftime("%d")}.json', 'w') as f:
             f.write(json.dumps(players_data))
 
         cwd = os.getcwd()
-        run_command("git add .", cwd=cwd)
+
+        run_command("git -C /var/lib/laliga-fantasy-api-archive add .", cwd=cwd)
 
         commit = f"Snapshot {now.strftime('%Y-%m-%d')}" 
-        run_command(f'git commit -m "{commit}"', cwd=cwd)
+        run_command(f'git -C /var/lib/laliga-fantasy-api-archive commit -m "{commit}"', cwd=cwd)
 
-        run_command("git push", cwd=cwd)
+        run_command("git -C /var/lib/laliga-fantasy-api-archive push", cwd=cwd)
